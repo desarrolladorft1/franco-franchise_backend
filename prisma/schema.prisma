@@ -1,0 +1,892 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model dim_abogados {
+  dim_abogados_id                      Int                           @id @default(autoincrement())
+  dim_usuarios_id                      Int
+  dim_abogados_activo                  Int?                          @default(1) @db.TinyInt
+  dim_abogados_licencia                String?                       @db.VarChar(45)
+  dim_abogados_nombres                 String?                       @db.VarChar(45)
+  dim_abogados_apellidos               String?                       @db.VarChar(45)
+  dim_abogados_cedula                  String?                       @db.VarChar(45)
+  dim_abogados_usuario                 String?                       @db.VarChar(45)
+  dim_abogados_correo                  String?                       @db.VarChar(45)
+  dim_abogados_fechanacimiento         String?                       @db.VarChar(45)
+  dim_abogados_telefono                String?                       @db.VarChar(45)
+  dim_abogados_provincia               String?                       @db.VarChar(45)
+  dim_abogados_ciudad                  String?                       @db.VarChar(45)
+  dim_abogados_direccion               String?                       @db.VarChar(200)
+  dim_abogados_codigopostal            String?                       @db.VarChar(45)
+  dim_abogados_imagenperfil            Int
+  dim_abogados_dim_abogadosdescripcion String?                       @db.VarChar(500)
+  dim_abogados_destacado               Int?                          @default(0) @db.TinyInt
+  dim_abogados_fechacreacion           DateTime?                     @default(now()) @db.DateTime(0)
+  dim_abogados_fechamodificacion       DateTime?                     @default(now()) @db.DateTime(0)
+  dim_urls                             dim_urls                      @relation(fields: [dim_abogados_imagenperfil], references: [dim_urls_id], onDelete: NoAction, onUpdate: NoAction, map: "dim_abogados_ibfk_1")
+  dim_favoritos                        dim_favoritos[]
+  dim_rangos_horarios                  dim_rangos_horarios[]
+  dim_review                           dim_review[]
+  dim_servicios                        dim_servicios[]
+  rel_especialidades_abogados          rel_especialidades_abogados[]
+  trx_respuestas                       trx_respuestas[]
+
+  @@index([dim_abogados_imagenperfil], map: "dim_abogados_imagenperfil")
+}
+
+model dim_beneficios {
+  dim_beneficios_id            Int       @id @default(autoincrement())
+  dim_beneficioss_activo       Int?      @default(1) @db.TinyInt
+  dim_beneficios_nombre        String    @db.VarChar(45)
+  dim_beneficios_descripcion   String?   @db.VarChar(45)
+  dim_beneficios_fechacreacion DateTime? @default(now()) @db.DateTime(0)
+}
+
+model dim_categorias {
+  dim_categorias_id            Int       @id @default(autoincrement())
+  dim_categorias_activo        Int?      @default(1) @db.TinyInt
+  dim_categorias_nombre        String    @db.VarChar(45)
+  dim_categorias_descripcion   String?   @db.VarChar(45)
+  dim_categorias_fechacreacion DateTime? @default(now()) @db.DateTime(0)
+}
+
+model dim_citas {
+  dim_citas_id                      Int                              @id @default(autoincrement())
+  dim_citas_activo                  Int?                             @default(1) @db.TinyInt
+  dim_horarios_citas_id             Int
+  dim_abogados_id                   Int
+  dim_cliente_id                    Int
+  dim_servicios_id                  Int
+  dim_usuario_creacion_id           Int
+  dim_usuario_modificacion_id       Int
+  dim_citas_fechacreacion           DateTime?                        @default(now()) @db.DateTime(0)
+  dim_citas_fechamodificacion       DateTime?                        @default(now()) @db.DateTime(0)
+  dim_citas_estado_id               Int
+  dim_citas_evento_id               String?                          @db.VarChar(45)
+  dim_citas_reschedule_user_counter Int                              @default(0) @db.TinyInt
+  dim_citas_calificado              Int?                             @default(0) @db.TinyInt
+  dim_estado_citas                  dim_estado_citas                 @relation(fields: [dim_citas_estado_id], references: [dim_estado_citas_id], onDelete: NoAction, onUpdate: NoAction, map: "dim_citas_FK")
+  dim_horarios_citas                dim_horarios_citas               @relation(fields: [dim_horarios_citas_id], references: [dim_horarios_citas_id], onDelete: NoAction, onUpdate: NoAction, map: "dim_citas_ibfk_1")
+  dim_servicios                     dim_servicios                    @relation(fields: [dim_servicios_id], references: [dim_servicios_id], onDelete: NoAction, onUpdate: NoAction, map: "dim_citas_ibfk_2")
+  dim_citas_informacion_contacto    dim_citas_informacion_contacto[]
+
+  @@index([dim_citas_estado_id], map: "dim_citas_FK")
+  @@index([dim_horarios_citas_id], map: "dim_horarios_citas_id")
+  @@index([dim_servicios_id], map: "dim_servicios_id")
+}
+
+model dim_citas_corredores {
+  dim_citas_corredores_id                Int       @id @default(autoincrement())
+  dim_citas_corredores_activo            Int?      @default(1) @db.TinyInt
+  dim_horarios_citas_corredores_id       Int
+  dim_corredores_id                      Int
+  dim_cliente_id                         Int
+  dim_servicios_corredores_id            Int
+  dim_usuario_creacion_id                Int
+  dim_usuario_modificacion_id            Int
+  dim_citas_corredores_fechacreacion     DateTime? @default(now()) @db.DateTime(0)
+  dim_citas_corredores_fechamodificacion DateTime? @default(now()) @db.DateTime(0)
+  dim_citas_estado_id                    Int
+  dim_citas_corredores_evento_id         String?   @db.VarChar(45)
+  dim_citas_reschedule_user_counter      Int       @default(0) @db.TinyInt
+  dim_citas_corredores_calificado        Int?      @default(0) @db.TinyInt
+}
+
+model dim_citas_informacion_contacto {
+  dim_citas_informacion_contacto_id                Int       @id @default(autoincrement())
+  dim_citas_informacion_contacto_activo            Int?      @default(1) @db.TinyInt
+  dim_citas_id                                     Int
+  dim_cliente_id                                   Int
+  dim_citas_informacion_contacto_nombres           String    @db.VarChar(45)
+  dim_citas_informacion_contacto_apellidos         String    @db.VarChar(45)
+  dim_citas_informacion_contacto_correo            String    @db.VarChar(45)
+  dim_citas_informacion_contacto_telefono          String    @db.VarChar(45)
+  dim_citas_informacion_contacto_motivo            String    @db.VarChar(45)
+  dim_citas_informacion_contacto_fechacreacion     DateTime? @default(now()) @db.DateTime(0)
+  dim_citas_informacion_contacto_fechamodificacion DateTime? @default(now()) @db.DateTime(0)
+  dim_citas                                        dim_citas @relation(fields: [dim_citas_id], references: [dim_citas_id], onDelete: NoAction, onUpdate: NoAction, map: "dim_citas_informacion_contacto_ibfk_1")
+
+  @@index([dim_citas_id], map: "dim_citas_id")
+}
+
+model dim_citas_informacion_contacto_corredores {
+  dim_citas_informacion_contacto_corredores_id                Int       @id @default(autoincrement())
+  dim_citas_informacion_contacto_corredores_activo            Int?      @default(1) @db.TinyInt
+  dim_citas_corredores_id                                     Int
+  dim_cliente_id                                              Int
+  dim_citas_informacion_contacto_corredores_nombres           String    @db.VarChar(45)
+  dim_citas_informacion_contacto_corredores_apellidos         String    @db.VarChar(45)
+  dim_citas_informacion_contacto_corredores_correo            String    @db.VarChar(45)
+  dim_citas_informacion_contacto_corredores_telefono          String    @db.VarChar(45)
+  dim_citas_informacion_contacto_corredores_motivo            String    @db.VarChar(45)
+  dim_citas_informacion_contacto_corredores_fechacreacion     DateTime? @default(now()) @db.DateTime(0)
+  dim_citas_informacion_contacto_corredores_fechamodificacion DateTime? @default(now()) @db.DateTime(0)
+}
+
+model dim_clientes {
+  dim_clientes_id            Int       @id @default(autoincrement())
+  dim_usuarios_id            Int
+  dim_clientes_activo        Int?      @default(1) @db.TinyInt
+  dim_clientes_nombres       String?   @db.VarChar(45)
+  dim_clientes_apellidos     String?   @db.VarChar(45)
+  dim_clientes_correo        String?   @db.VarChar(45)
+  dim_clientes_telefono      String?   @db.VarChar(45)
+  dim_clientes_estado        String?   @db.VarChar(45)
+  dim_clientes_direccion     String?   @db.VarChar(45)
+  dim_clientes_codigopostal  String?   @db.VarChar(45)
+  dim_clientes_fechacreacion DateTime? @default(now()) @db.DateTime(0)
+}
+
+model dim_comment_user {
+  dim_comment_user_id     Int       @id @default(autoincrement())
+  dim_padre_id            Int?
+  rel_activo              Int?      @default(1) @db.TinyInt
+  dim_comment_user_header String?   @db.VarChar(45)
+  dim_comment_user        String?   @db.VarChar(45)
+  dim_comment_like        Int?      @default(0) @db.TinyInt
+  dim_comment_nro_like    Int?      @default(0)
+  rel_fechacreacion       DateTime? @default(now()) @db.DateTime(0)
+}
+
+model dim_contractitem {
+  contractItem_id     Int       @id @default(autoincrement())
+  contractItem_name   String?   @db.VarChar(45)
+  contractItem_status Int?      @default(1) @db.TinyInt
+  created_at          DateTime? @default(now()) @db.Timestamp(0)
+}
+
+model dim_corredores {
+  dim_corredores_id                Int       @id @default(autoincrement())
+  dim_usuarios_id                  Int       @default(1)
+  dim_corredores_activo            Int?      @default(1) @db.TinyInt
+  dim_corredores_licencia          String?   @db.VarChar(45)
+  dim_corredores_nombres           String?   @db.VarChar(45)
+  dim_corredores_apellidos         String?   @db.VarChar(45)
+  dim_corredores_cedula            String?   @db.VarChar(45)
+  dim_corredores_usuario           String?   @db.VarChar(45)
+  dim_corredores_correo            String?   @db.VarChar(45)
+  dim_corredores_fechanacimiento   String?   @db.VarChar(45)
+  dim_corredores_telefono          String?   @db.VarChar(45)
+  dim_corredores_provincia         String?   @db.VarChar(45)
+  dim_corredores_ciudad            String?   @db.VarChar(45)
+  dim_corredores_direccion         String?   @db.VarChar(45)
+  dim_corredores_codigopostal      String?   @db.VarChar(45)
+  dim_corredores_imagenperfil      Int
+  dim_corredores_descripcion       String?   @db.Text
+  dim_corredores_destacado         Int?      @default(0) @db.TinyInt
+  dim_corredores_fechacreacion     DateTime? @default(now()) @db.DateTime(0)
+  dim_corredores_fechamodificacion DateTime? @default(now()) @db.DateTime(0)
+}
+
+model dim_documentgenratordetails {
+  documentgenratorDetails_id                       Int       @id @default(autoincrement())
+  documentgenratorDetails_buyerSellerQuestion      String?   @db.LongText
+  documentgenratorDetails_declationsQuestion       String?   @db.LongText
+  documentgenratorDetails_clausesEssencialQuestion String?   @db.LongText
+  documentgenratorDetails_accesoriasQuestion       String?   @db.LongText
+  documentgenratorDetails_buyerSellerContent       String?   @db.LongText
+  documentgenratorDetails_declartionsContent       String?   @db.LongText
+  documentgenratorDetails_clausesEssencialContent  String?   @db.LongText
+  documentgenratorDetails_accesoriasContent        String?   @db.LongText
+  created_at                                       DateTime? @default(now()) @db.DateTime(0)
+}
+
+model dim_especialidades_abogados {
+  dim_especialidades_abogados_id                Int                           @id @default(autoincrement())
+  dim_especialidades_abogados_activo            Int?                          @default(1) @db.TinyInt
+  dim_especialidades_abogados_nombre            String                        @db.VarChar(45)
+  dim_especialidades_abogados_descripcion       String?                       @db.Text
+  dim_especialidades_abogados_fechacreacion     DateTime?                     @default(now()) @db.DateTime(0)
+  dim_especialidades_abogados_fechamodificacion DateTime?                     @default(now()) @db.DateTime(0)
+  rel_especialidades_abogados                   rel_especialidades_abogados[]
+  trx_preguntas                                 trx_preguntas[]
+}
+
+model dim_especialidades_corredores {
+  dim_especialidades_corredores_id                Int       @id @default(autoincrement())
+  dim_especialidades_corredores_activo            Int?      @default(1) @db.TinyInt
+  dim_especialidades_corredores_nombre            String    @db.VarChar(45)
+  dim_especialidades_corredores_descripcion       String?   @db.Text
+  dim_especialidades_corredores_fechacreacion     DateTime? @default(now()) @db.DateTime(0)
+  dim_especialidades_corredores_fechamodificacion DateTime? @default(now()) @db.DateTime(0)
+}
+
+model dim_estado_citas {
+  dim_estado_citas_id                Int         @id @default(autoincrement())
+  dim_estado_citas_activo            Int?        @default(1) @db.TinyInt
+  dim_estado_citas_nombre            String      @db.VarChar(45)
+  dim_estado_citas_abreviacion       String      @db.VarChar(45)
+  dim_estado_citas_descripcion       String      @db.VarChar(45)
+  dim_estado_citas_fechacreacion     DateTime?   @default(now()) @db.DateTime(0)
+  dim_estado_citas_fechamodificacion DateTime?   @default(now()) @db.DateTime(0)
+  dim_citas                          dim_citas[]
+}
+
+model dim_estado_preguntas {
+  dim_estado_preguntas_id                Int             @id @default(autoincrement())
+  dim_estado_preguntas_activo            Int?            @default(1) @db.TinyInt
+  dim_estado_preguntas_nombre            String          @db.VarChar(45)
+  dim_estado_preguntas_abreviacion       String          @db.VarChar(45)
+  dim_estado_preguntas_descripcion       String          @db.VarChar(45)
+  dim_estado_preguntas_fechacreacion     DateTime?       @default(now()) @db.DateTime(0)
+  dim_estado_preguntas_fechamodificacion DateTime?       @default(now()) @db.DateTime(0)
+  trx_preguntas                          trx_preguntas[]
+}
+
+model dim_estado_preguntas_corredores {
+  dim_estado_preguntas_corredores_id                Int       @id @default(autoincrement())
+  dim_estado_preguntas_corredores_activo            Int?      @default(1) @db.TinyInt
+  dim_estado_preguntas_corredores_nombre            String    @db.VarChar(45)
+  dim_estado_preguntas_corredores_abreviacion       String    @db.VarChar(45)
+  dim_estado_preguntas_corredores_descripcion       String    @db.VarChar(100)
+  dim_estado_preguntas_corredores_fechacreacion     DateTime? @default(now()) @db.DateTime(0)
+  dim_estado_preguntas_corredores_fechamodificacion DateTime? @default(now()) @db.DateTime(0)
+}
+
+model dim_estados {
+  dim_estados_id            Int       @id @default(autoincrement())
+  dim_estados_clave         String    @db.VarChar(45)
+  dim_estados_nombre        String    @db.VarChar(45)
+  dim_estados_abreviatura   String    @db.VarChar(45)
+  dim_estados_activo        Int       @default(1) @db.TinyInt
+  dim_estados_fechacreacion DateTime? @default(now()) @db.DateTime(0)
+}
+
+model dim_exam {
+  dim_exam_id                      Int                @id @default(autoincrement())
+  dim_exam_desc                    String?            @db.VarChar(45)
+  dim_exam_type                    String?            @db.VarChar(45)
+  dim_exam_activo                  Int?               @default(1) @db.TinyInt
+  dim_preguntas_exam_fechacreacion DateTime?          @default(now()) @db.DateTime(0)
+  rel_courses_exam                 rel_courses_exam[]
+}
+
+model dim_experiencias {
+  dim_experiencias_id            Int       @id @default(autoincrement())
+  dim_abogados_id                Int?
+  dim_experiencias_activo        Int?      @default(1) @db.TinyInt
+  dim_experiencias_descripcion   String?   @db.Text
+  dim_experiencias_fechacreacion DateTime? @default(now()) @db.DateTime(0)
+}
+
+model dim_experiencias_corredores {
+  dim_experiencias_corredores_id            Int       @id @default(autoincrement())
+  dim_corredores_id                         Int?
+  dim_experiencias_corredores_activo        Int?      @default(1) @db.TinyInt
+  dim_experiencias_corredores_descripcion   String?   @db.Text
+  dim_experiencias_corredores_fechacreacion DateTime? @default(now()) @db.DateTime(0)
+}
+
+model dim_favoritos {
+  dim_favoritos_id                Int          @id @default(autoincrement())
+  dim_favoritos_activo            Int?         @default(1) @db.TinyInt
+  dim_abogados_id                 Int
+  dim_cliente_usuarios_id         Int
+  dim_favoritos_fechacreacion     DateTime?    @default(now()) @db.DateTime(0)
+  dim_favoritos_fechamodificacion DateTime?    @default(now()) @db.DateTime(0)
+  dim_abogados                    dim_abogados @relation(fields: [dim_abogados_id], references: [dim_abogados_id], onDelete: NoAction, onUpdate: NoAction, map: "dim_favoritos_ibfk_1")
+
+  @@index([dim_abogados_id], map: "dim_abogados_id")
+  @@index([dim_cliente_usuarios_id], map: "dim_cliente_usuarios_id")
+}
+
+model dim_favoritos_corredores {
+  dim_favoritos_corredores_id                Int       @id @default(autoincrement())
+  dim_favoritos_corredores_activo            Int?      @default(1) @db.TinyInt
+  dim_corredores_id                          Int
+  dim_cliente_usuarios_id                    Int
+  dim_favoritos_corredores_fechacreacion     DateTime? @default(now()) @db.DateTime(0)
+  dim_favoritos_corredores_fechamodificacion DateTime? @default(now()) @db.DateTime(0)
+}
+
+model dim_formacion {
+  dim_formacion_id            Int       @id @default(autoincrement())
+  dim_abogados_id             Int?
+  dim_formacion_activo        Int?      @default(1) @db.TinyInt
+  dim_formacion_descripcion   String?   @db.Text
+  dim_formacion_fechacreacion DateTime? @default(now()) @db.DateTime(0)
+}
+
+model dim_formacion_corredores {
+  dim_formacion_corredores_id            Int       @id @default(autoincrement())
+  dim_corredores_id                      Int?
+  dim_formacion_corredores_activo        Int?      @default(1) @db.TinyInt
+  dim_formacion_corredores_descripcion   String?   @db.Text
+  dim_formacion_corredores_fechacreacion DateTime? @default(now()) @db.DateTime(0)
+}
+
+model dim_fundamentos {
+  dim_fundamentos_id            Int       @id @default(autoincrement())
+  dim_fundamentos_activo        Int?      @default(1) @db.TinyInt
+  dim_fundamentos_nombre        String    @db.VarChar(45)
+  dim_fundamentos_descripcion   String?   @db.VarChar(100)
+  dim_fundamentos_fechacreacion DateTime? @default(now()) @db.DateTime(0)
+}
+
+model dim_horarios_citas {
+  dim_horarios_citas_id                  Int                          @id @default(autoincrement())
+  dim_horarios_citas_activo              Int?                         @default(1) @db.TinyInt
+  dim_rangos_horarios_detalles_id        Int
+  dim_horas_id                           Int
+  dim_horarios_citas_cantidad_agendada   Int?                         @default(1) @db.TinyInt
+  dim_horarios_citas_cantidad_disponible Int?                         @default(1) @db.TinyInt
+  dim_horarios_citas_fechacreacion       DateTime?                    @default(now()) @db.DateTime(0)
+  dim_citas                              dim_citas[]
+  dim_rangos_horarios_detalles           dim_rangos_horarios_detalles @relation(fields: [dim_rangos_horarios_detalles_id], references: [dim_rangos_horarios_detalles_id], onDelete: NoAction, onUpdate: NoAction, map: "dim_horarios_citas_ibfk_1")
+  dim_horas                              dim_horas                    @relation(fields: [dim_horas_id], references: [dim_horas_id], onDelete: NoAction, onUpdate: NoAction, map: "dim_horarios_citas_ibfk_2")
+
+  @@index([dim_horas_id], map: "dim_horas_id")
+  @@index([dim_rangos_horarios_detalles_id], map: "dim_rangos_horarios_detalles_id")
+}
+
+model dim_horarios_citas_corredores {
+  dim_horarios_citas_corredores_id                  Int       @id @default(autoincrement())
+  dim_horarios_citas_corredores_activo              Int?      @default(1) @db.TinyInt
+  dim_rangos_horarios_detalles_corredores_id        Int
+  dim_horas_id                                      Int
+  dim_horarios_citas_corredores_cantidad_agendada   Int?      @default(1) @db.TinyInt
+  dim_horarios_citas_corredores_cantidad_disponible Int?      @default(1) @db.TinyInt
+  dim_horarios_citas_corredores_fechacreacion       DateTime? @default(now()) @db.DateTime(0)
+}
+
+model dim_horas {
+  dim_horas_id            Int                  @id @default(autoincrement())
+  dim_horas_activo        Int?                 @default(1) @db.TinyInt
+  dim_horas_orden         Int                  @db.TinyInt
+  dim_horas_hora          String               @db.VarChar(45)
+  dim_horas_fechacreacion DateTime?            @default(now()) @db.DateTime(0)
+  dim_horarios_citas      dim_horarios_citas[]
+}
+
+model dim_municipios {
+  dim_municipios_id            Int       @id @default(autoincrement())
+  dim_estados_id               Int
+  dim_municipios_clave         String    @db.VarChar(45)
+  dim_municipios_nombre        String    @db.VarChar(45)
+  dim_municipios_activo        Int       @default(1) @db.TinyInt
+  dim_municipios_fechacreacion DateTime? @default(now()) @db.DateTime(0)
+}
+
+model dim_opciones_exam {
+  dim_opciones_exam_id             Int       @id @default(autoincrement())
+  dim_opciones_exam_valor          String    @db.VarChar(45)
+  dim_preguntas_exam_correct       Int       @db.TinyInt
+  dim_preguntas_exam_fechacreacion DateTime? @default(now()) @db.DateTime(0)
+}
+
+model dim_plan_firmas {
+  dim_id_plan     Int  @id @default(autoincrement())
+  dim_num_firmas  Int? @default(0)
+  dim_tipo_plan   Int? @default(0)
+  dim_usuarios_id Int
+  dim_plan_activo Int? @default(0)
+}
+
+model dim_precios {
+  dim_precios_id                Int                     @id @default(autoincrement())
+  dim_precios_activo            Int?                    @default(1) @db.TinyInt
+  dim_precios_version           Int
+  dim_precios_bruto             Float                   @db.Float
+  dim_precios_neto              Float                   @db.Float
+  dim_precios_iva               Float                   @db.Float
+  dim_precios_fechacreacion     DateTime?               @default(now()) @db.DateTime(0)
+  dim_precios_fechamodificacion DateTime?               @default(now()) @db.DateTime(0)
+  dim_servicios                 dim_servicios[]
+  rel_productos_precios         rel_productos_precios[]
+}
+
+model dim_precios_corredores {
+  dim_precios_corredores_id                Int       @id @default(autoincrement())
+  dim_precios_corredores_activo            Int?      @default(1) @db.TinyInt
+  dim_precios_corredores_version           Int
+  dim_precios_corredores_bruto             Float     @db.Float
+  dim_precios_corredores_neto              Float     @db.Float
+  dim_precios_corredores_iva               Float     @db.Float
+  dim_precios_corredores_fechacreacion     DateTime? @default(now()) @db.DateTime(0)
+  dim_precios_corredores_fechamodificacion DateTime? @default(now()) @db.DateTime(0)
+}
+
+model dim_preguntas_exam {
+  dim_preguntas_exam_id            Int       @id @default(autoincrement())
+  dim_preguntas_exam_pregunta      String    @db.VarChar(45)
+  dim_preguntas_type               String?   @db.VarChar(45)
+  dim_preguntas_exam_fechacreacion DateTime? @default(now()) @db.DateTime(0)
+}
+
+model dim_productos {
+  dim_productos_id            Int                     @id @default(autoincrement())
+  dim_productos_activo        Int?                    @default(1) @db.TinyInt
+  dim_productos_nombre        String                  @db.VarChar(45)
+  dim_productos_descripcion   String?                 @db.Text
+  dim_productos_fechacreacion DateTime?               @default(now()) @db.DateTime(0)
+  rel_courses_exam            rel_courses_exam[]
+  rel_productos_precios       rel_productos_precios[]
+  rel_productos_tipos         rel_productos_tipos[]
+  rel_urls_productos          rel_urls_productos[]
+}
+
+model dim_productos_content {
+  dim_productos_content_id           Int    @id @default(autoincrement())
+  dim_productos_content_name         String @db.VarChar(45)
+  dim_productos_content_total_clases Float  @db.Float
+  dim_productos_content_total_tiempo Float  @db.Float
+}
+
+model dim_productos_content_detaill {
+  dim_productos_content_detaill_id           Int    @id @default(autoincrement())
+  dim_productos_content_detaill_name         String @db.VarChar(45)
+  dim_productos_content_detaill_total_tiempo Float  @db.Float
+}
+
+model dim_productos_cursos {
+  dim_productos_cursos_id                     Int       @id @default(autoincrement())
+  dim_productos_cursos_activo                 Int?      @default(1) @db.TinyInt
+  dim_productos_cursos_dueno                  String?   @db.VarChar(45)
+  dim_productos_cursos_dueno_job              String?   @db.VarChar(45)
+  dim_productos_cursos_avatar                 String?   @db.VarChar(45)
+  dim_productos_cursos_rating                 Int?      @default(0) @db.TinyInt
+  dim_productos_cursos_what_you_will_learn    String?   @db.Text
+  dim_productos_cursos_requirements           String?   @db.Text
+  dim_productos_cursos_this_course_includes   String?   @db.Text
+  dim_productos_cursos_who_is_this_course_for String?   @db.Text
+  dim_productos_cursos_fechacreacion          DateTime? @default(now()) @db.DateTime(0)
+}
+
+model dim_rangos_horarios {
+  dim_rangos_horarios_id            Int                            @id @default(autoincrement())
+  dim_rangos_horarios_activo        Int?                           @default(1) @db.TinyInt
+  dim_abogados_id                   Int
+  dim_rangos_horarios_desde         DateTime                       @db.Date
+  dim_rangos_horarios_hasta         DateTime                       @db.Date
+  dim_rangos_horarios_fechacreacion DateTime?                      @default(now()) @db.DateTime(0)
+  dim_abogados                      dim_abogados                   @relation(fields: [dim_abogados_id], references: [dim_abogados_id], onDelete: NoAction, onUpdate: NoAction, map: "dim_rangos_horarios_ibfk_1")
+  dim_rangos_horarios_detalles      dim_rangos_horarios_detalles[]
+
+  @@index([dim_abogados_id], map: "dim_abogados_id")
+}
+
+model dim_rangos_horarios_corredores {
+  dim_rangos_horarios_corredores_id            Int       @id @default(autoincrement())
+  dim_rangos_horarios_corredores_activo        Int?      @default(1) @db.TinyInt
+  dim_corredores_id                            Int
+  dim_rangos_horarios_corredores_desde         DateTime  @db.Date
+  dim_rangos_horarios_corredores_hasta         DateTime  @db.Date
+  dim_rangos_horarios_corredores_fechacreacion DateTime? @default(now()) @db.DateTime(0)
+}
+
+model dim_rangos_horarios_detalles {
+  dim_rangos_horarios_detalles_id            Int                  @id @default(autoincrement())
+  dim_rangos_horarios_detalles_activo        Int?                 @default(1) @db.TinyInt
+  dim_rangos_horarios_id                     Int
+  dim_rangos_horarios_fecha                  DateTime             @db.Date
+  dim_rangos_horarios_detalles_fechacreacion DateTime?            @default(now()) @db.DateTime(0)
+  dim_horarios_citas                         dim_horarios_citas[]
+  dim_rangos_horarios                        dim_rangos_horarios  @relation(fields: [dim_rangos_horarios_id], references: [dim_rangos_horarios_id], onDelete: NoAction, onUpdate: NoAction, map: "dim_rangos_horarios_detalles_ibfk_1")
+
+  @@index([dim_rangos_horarios_id], map: "dim_rangos_horarios_id")
+}
+
+model dim_rangos_horarios_detalles_corredores {
+  dim_rangos_horarios_detalles_corredores_id            Int       @id @default(autoincrement())
+  dim_rangos_horarios_detalles_corredores_activo        Int?      @default(1) @db.TinyInt
+  dim_rangos_horarios_corredores_id                     Int
+  dim_rangos_horarios_corredores_fecha                  DateTime  @db.Date
+  dim_rangos_horarios_detalles_corredores_fechacreacion DateTime? @default(now()) @db.DateTime(0)
+}
+
+model dim_registro_marca {
+  dim_id_registro_marca            Int       @id @default(autoincrement())
+  nombre                           String?   @db.VarChar(45)
+  imagen                           String?   @db.VarChar(45)
+  unaPersona                       String?   @db.VarChar(45)
+  unaPersonaNombre                 String?   @db.VarChar(45)
+  unaPersonaApellidos              String?   @db.VarChar(45)
+  numPersonas                      String?   @db.VarChar(45)
+  persona1Nombre                   String?   @db.VarChar(45)
+  persona1Apellidos                String?   @db.VarChar(45)
+  persona2Nombre                   String?   @db.VarChar(45)
+  persona2Apellidos                String?   @db.VarChar(45)
+  persona3Nombre                   String?   @db.VarChar(45)
+  persona3Apellidos                String?   @db.VarChar(45)
+  persona4Nombre                   String?   @db.VarChar(45)
+  persona4Apellidos                String?   @db.VarChar(45)
+  persona5Nombre                   String?   @db.VarChar(45)
+  persona5Apellidos                String?   @db.VarChar(45)
+  calle                            String?   @db.VarChar(45)
+  numeroExt                        Int?
+  numeroInt                        String?   @db.VarChar(45)
+  colonia                          String?   @db.VarChar(45)
+  CP                               Int?
+  ciudad                           String?   @db.VarChar(45)
+  estado                           String?   @db.VarChar(45)
+  pais                             String?   @db.VarChar(45)
+  correo                           String?   @db.VarChar(45)
+  telefono                         String?   @db.VarChar(45)
+  medio                            String?   @db.VarChar(45)
+  fecha                            String?   @db.VarChar(45)
+  descripcion                      String?   @db.VarChar(45)
+  servicio                         String?   @db.VarChar(45)
+  dim_usuario_id                   Int?
+  dim_productos_id                 Int?
+  tipo_servicio                    String?   @db.VarChar(45)
+  activo                           Int?      @default(0) @db.TinyInt
+  dim_registro_marca_fechacreacion DateTime? @default(now()) @db.DateTime(0)
+}
+
+model dim_review {
+  dim_review_id                Int          @id @default(autoincrement())
+  dim_review_activo            Int?         @default(1) @db.TinyInt
+  dim_review_rating            Int          @db.TinyInt
+  dim_review_text              String       @db.VarChar(100)
+  dim_abogados_id              Int
+  dim_cliente_usuarios_id      Int
+  dim_review_fechacreacion     DateTime?    @default(now()) @db.DateTime(0)
+  dim_review_fechamodificacion DateTime?    @default(now()) @db.DateTime(0)
+  dim_abogados                 dim_abogados @relation(fields: [dim_abogados_id], references: [dim_abogados_id], onDelete: NoAction, onUpdate: NoAction, map: "dim_review_ibfk_1")
+
+  @@index([dim_abogados_id], map: "dim_abogados_id")
+}
+
+model dim_review_corredores {
+  dim_review_corredores_id                Int       @id @default(autoincrement())
+  dim_review_corredores_activo            Int?      @default(1) @db.TinyInt
+  dim_review_rating                       Int       @db.TinyInt
+  dim_review_text                         String    @db.VarChar(100)
+  dim_corredores_id                       Int
+  dim_cliente_usuario_corredores_id       Int
+  dim_review_corredores_fechacreacion     DateTime? @default(now()) @db.DateTime(0)
+  dim_review_corredores_fechamodificacion DateTime? @default(now()) @db.DateTime(0)
+}
+
+model dim_roles {
+  dim_roles_id            Int       @id @default(autoincrement())
+  dim_roles_activo        Int?      @default(1) @db.TinyInt
+  dim_roles_nombre        String    @db.VarChar(45)
+  dim_roles_descripcion   String?   @db.VarChar(45)
+  dim_roles_fechacreacion DateTime? @default(now()) @db.DateTime(0)
+}
+
+model dim_servicios {
+  dim_servicios_id                Int          @id @default(autoincrement())
+  dim_servicios_activo            Int?         @default(1) @db.TinyInt
+  dim_servicios_nombre            String       @db.VarChar(45)
+  dim_servicios_descripcion       String?      @db.Text
+  dim_servicios_abogado_id        Int
+  dim_servicios_precios_id        Int
+  dim_servicios_fechacreacion     DateTime?    @default(now()) @db.DateTime(0)
+  dim_servicios_fechamodificacion DateTime?    @default(now()) @db.DateTime(0)
+  dim_citas                       dim_citas[]
+  dim_abogados                    dim_abogados @relation(fields: [dim_servicios_abogado_id], references: [dim_abogados_id], onDelete: NoAction, onUpdate: NoAction, map: "dim_servicios_ibfk_1")
+  dim_precios                     dim_precios  @relation(fields: [dim_servicios_precios_id], references: [dim_precios_id], onDelete: NoAction, onUpdate: NoAction, map: "dim_servicios_ibfk_2")
+
+  @@index([dim_servicios_abogado_id], map: "dim_servicios_abogado_id")
+  @@index([dim_servicios_precios_id], map: "dim_servicios_precios_id")
+}
+
+model dim_servicios_corredores {
+  dim_servicios_corredores_id                Int       @id @default(autoincrement())
+  dim_servicios_corredores_activo            Int?      @default(1) @db.TinyInt
+  dim_servicios_corredores_nombre            String    @db.VarChar(45)
+  dim_servicios_corredores_descripcion       String?   @db.Text
+  dim_servicios_corred_id                    Int
+  dim_servicios_precios_id                   Int
+  dim_servicios_corredores_fechacreacion     DateTime? @default(now()) @db.DateTime(0)
+  dim_servicios_corredores_fechamodificacion DateTime? @default(now()) @db.DateTime(0)
+}
+
+model dim_tipos {
+  dim_tipos_id            Int                   @id @default(autoincrement())
+  dim_tipos_activo        Int?                  @default(1) @db.TinyInt
+  dim_tipos_nombre        String                @db.VarChar(45)
+  dim_tipos_descripcion   String?               @db.VarChar(100)
+  dim_tipos_fechacreacion DateTime?             @default(now()) @db.DateTime(0)
+  rel_productos_tipos     rel_productos_tipos[]
+}
+
+model dim_urls {
+  dim_urls_id            Int                  @id @default(autoincrement())
+  dim_urls_activo        Int?                 @default(1) @db.TinyInt
+  dim_urls_url           String               @db.VarChar(200)
+  dim_urls_tipo          Int?                 @default(1) @db.TinyInt
+  dim_urls_fechacreacion DateTime?            @default(now()) @db.DateTime(0)
+  dim_abogados           dim_abogados[]
+  rel_urls_productos     rel_urls_productos[]
+}
+
+model dim_urls_corredores {
+  dim_urls_corredores_id            Int       @id @default(autoincrement())
+  dim_urls_corredores_activo        Int?      @default(1) @db.TinyInt
+  dim_urls_corredores_url           String    @db.VarChar(100)
+  dim_urls_corredores_tipo          Int?      @default(1) @db.TinyInt
+  dim_urls_corredores_fechacreacion DateTime? @default(now()) @db.DateTime(0)
+}
+
+model dim_urlstipos {
+  dim_urlstipos_id            Int       @id @default(autoincrement())
+  dim_urlstipos_activo        Int?      @default(1) @db.TinyInt
+  dim_urlstipos_nombre        String    @db.VarChar(45)
+  dim_urlstipos_descripcion   String    @db.VarChar(45)
+  dim_urlstipos_fechacreacion DateTime? @default(now()) @db.DateTime(0)
+}
+
+model dim_usuarios {
+  dim_usuarios_id            Int       @id @default(autoincrement())
+  dim_usuarios_activo        Int?      @default(1) @db.TinyInt
+  dim_roles_id               Int?      @default(3)
+  dim_plan                   Int?      @default(0)
+  dim_usuarios_usuario       String?   @db.VarChar(45)
+  dim_usuarios_correo        String?   @db.VarChar(45)
+  dim_usuarios_key           String?   @db.VarChar(200)
+  dim_usuarios_fechacreacion DateTime? @default(now()) @db.DateTime(0)
+  citas                      citas[]
+}
+
+model dim_usuarios_detalles {
+  dim_usuarios_detalles_id              Int       @id @default(autoincrement())
+  dim_usuarios_id                       Int
+  dim_usuarios_detalles_activo          Int?      @default(1) @db.TinyInt
+  dim_usuarios_detalles_nombres         String?   @db.VarChar(45)
+  dim_usuarios_detalles_apellidos       String?   @db.VarChar(45)
+  dim_usuarios_detalles_usuario         String?   @db.VarChar(45)
+  dim_usuarios_detalles_correo          String?   @db.VarChar(45)
+  dim_usuarios_detalles_fechanacimiento String?   @db.VarChar(45)
+  dim_usuarios_detalles_telefono        String?   @db.VarChar(45)
+  dim_usuarios_detalles_provincia       String?   @db.VarChar(45)
+  dim_usuarios_detalles_ciudad          String?   @db.VarChar(45)
+  dim_usuarios_detalles_direccion       String?   @db.VarChar(45)
+  dim_usuarios_detalles_codigopostal    String?   @db.VarChar(45)
+  dim_usuarios_detalles_fechacreacion   DateTime? @default(now()) @db.DateTime(0)
+  dim_usuarios_detalles_key             String?   @db.VarChar(200)
+}
+
+model imp_postulantes {
+  imp_postulantes_id              Int       @id @default(autoincrement())
+  dim_usuarios_id                 Int?
+  imp_postulantes_activo          Int?      @default(1) @db.TinyInt
+  imp_postulantes_estatus         Int?      @default(1) @db.TinyInt
+  imp_postulantes_nombres         String?   @db.VarChar(45)
+  imp_postulantes_apellidos       String?   @db.VarChar(45)
+  imp_postulantes_identificacion  String?   @db.VarChar(45)
+  imp_postulantes_cedula          String?   @db.VarChar(45)
+  imp_postulantes_fechanacimiento String?   @db.VarChar(45)
+  imp_postulantes_telefono        String?   @db.VarChar(45)
+  imp_postulantes_correo          String?   @db.VarChar(45)
+  imp_postulantes_estado          Int?
+  imp_postulantes_ciudad          Int?
+  imp_postulantes_direccion       String?   @db.VarChar(45)
+  imp_postulantes_codigopostal    String?   @db.VarChar(45)
+  imp_postulantes_descripcion     String?   @db.VarChar(100)
+  imp_postulantes_formacion       String?   @db.Text
+  imp_postulantes_especialidad    String?   @db.VarChar(45)
+  imp_postulantes_experiencia     String?   @db.Text
+  imp_postulantes_precio          Float?    @db.Float
+  imp_postulantes_tarjetaBancaria String?   @db.VarChar(45)
+  imp_postulantes_imagen          String?   @db.VarChar(100)
+  imp_postulantes_curriculum      String?   @db.VarChar(100)
+  imp_postulantes_fechacreacion   DateTime? @default(now()) @db.DateTime(0)
+}
+
+model imp_postulantes2 {
+  imp_postulantes_id              Int       @id @default(autoincrement())
+  dim_usuarios_id                 Int?
+  imp_postulantes_activo          Int?      @default(1) @db.TinyInt
+  imp_postulantes_estatus         Int?      @default(1) @db.TinyInt
+  imp_postulantes_nombres         String?   @db.VarChar(45)
+  imp_postulantes_apellidos       String?   @db.VarChar(45)
+  imp_postulantes_identificacion  String?   @db.VarChar(45)
+  imp_postulantes_cedula          String?   @db.VarChar(45)
+  imp_postulantes_fechanacimiento String?   @db.VarChar(45)
+  imp_postulantes_telefono        String?   @db.VarChar(45)
+  imp_postulantes_correo          String?   @db.VarChar(45)
+  imp_postulantes_estado          Int?
+  imp_postulantes_ciudad          Int?
+  imp_postulantes_direccion       String?   @db.VarChar(45)
+  imp_postulantes_codigopostal    String?   @db.VarChar(45)
+  imp_postulantes_descripcion     String?   @db.VarChar(100)
+  imp_postulantes_formacion       String?   @db.Text
+  imp_postulantes_especialidad    String?   @db.VarChar(45)
+  imp_postulantes_experiencia     String?   @db.VarChar(45)
+  imp_postulantes_precio          Float?    @db.Float
+  imp_postulantes_imagen          String?   @db.VarChar(100)
+  imp_postulantes_curriculum      String?   @db.VarChar(100)
+  imp_postulantes_fechacreacion   DateTime? @default(now()) @db.DateTime(0)
+}
+
+model rel_especialidades_abogados {
+  dim_rel_especialidades_abogados_id            Int                         @id @default(autoincrement())
+  dim_abogados_id                               Int
+  dim_especialidades_abogados_id                Int
+  rel_activo                                    Int?                        @default(1) @db.TinyInt
+  rel_especialidades_abogados_fechacreacion     DateTime?                   @default(now()) @db.DateTime(0)
+  rel_especialidades_abogados_fechamodificacion DateTime?                   @default(now()) @db.DateTime(0)
+  dim_abogados                                  dim_abogados                @relation(fields: [dim_abogados_id], references: [dim_abogados_id], onDelete: NoAction, onUpdate: NoAction, map: "rel_especialidades_abogados_ibfk_1")
+  dim_especialidades_abogados                   dim_especialidades_abogados @relation(fields: [dim_especialidades_abogados_id], references: [dim_especialidades_abogados_id], onDelete: NoAction, onUpdate: NoAction, map: "rel_especialidades_abogados_ibfk_2")
+
+  @@index([dim_abogados_id], map: "dim_abogados_id")
+  @@index([dim_especialidades_abogados_id], map: "dim_especialidades_abogados_id")
+}
+
+model rel_especialidades_corredores {
+  dim_rel_especialidades_corredores_id            Int       @id @default(autoincrement())
+  dim_corredores_id                               Int
+  dim_especialidades_corredores_id                Int
+  rel_corredores_activo                           Int?      @default(1) @db.TinyInt
+  rel_especialidades_corredores_fechacreacion     DateTime? @default(now()) @db.DateTime(0)
+  rel_especialidades_corredores_fechamodificacion DateTime? @default(now()) @db.DateTime(0)
+}
+
+model trx_preguntas {
+  trx_preguntas_id               Int                          @id @default(autoincrement())
+  trx_preguntas_activo           Int?                         @default(1) @db.TinyInt
+  trx_preguntas_texto            String                       @db.VarChar(100)
+  trx_preguntas_correo           String                       @db.VarChar(100)
+  dim_abogados_id                Int?
+  dim_estado_preguntas_id        Int
+  dim_usuario                    Int?
+  dim_especialidades_abogados_id Int?
+  trx_preguntas_fechacreacion    DateTime?                    @default(now()) @db.DateTime(0)
+  dim_estado_preguntas           dim_estado_preguntas         @relation(fields: [dim_estado_preguntas_id], references: [dim_estado_preguntas_id], onDelete: NoAction, onUpdate: NoAction, map: "trx_preguntas_FK")
+  dim_especialidades_abogados    dim_especialidades_abogados? @relation(fields: [dim_especialidades_abogados_id], references: [dim_especialidades_abogados_id], onDelete: NoAction, onUpdate: NoAction, map: "trx_preguntas_ibfk_1")
+  trx_respuestas                 trx_respuestas[]
+
+  @@index([dim_especialidades_abogados_id], map: "dim_especialidades_abogados_id")
+  @@index([dim_estado_preguntas_id], map: "trx_preguntas_FK")
+}
+
+model trx_preguntas_corredores {
+  trx_preguntas_corredores_id            Int       @id @default(autoincrement())
+  trx_preguntas_corredores_activo        Int?      @default(1) @db.TinyInt
+  trx_preguntas_corredores_texto         String    @db.VarChar(100)
+  txx_preguntas_corredores_correo        String    @db.VarChar(60)
+  dim_corredores_id                      Int?
+  dim_estado_preguntas_corredores_id     Int
+  dim_usuario                            Int?
+  dim_especialidades_corredores_id       Int?
+  trx_preguntas_corredores_fechacreacion DateTime? @default(now()) @db.DateTime(0)
+}
+
+model trx_respuestas {
+  trx_respuestas_id            Int           @id @default(autoincrement())
+  trx_preguntas_id             Int
+  trx_respuestas_activo        Int?          @default(1) @db.TinyInt
+  trx_respuestas_texto         String        @db.VarChar(100)
+  dim_abogados_id              Int?
+  trx_respuestas_fechacreacion DateTime?     @default(now()) @db.DateTime(0)
+  trx_preguntas                trx_preguntas @relation(fields: [trx_preguntas_id], references: [trx_preguntas_id], onDelete: NoAction, onUpdate: NoAction, map: "trx_respuestas_ibfk_1")
+  dim_abogados                 dim_abogados? @relation(fields: [dim_abogados_id], references: [dim_abogados_id], onDelete: NoAction, onUpdate: NoAction, map: "trx_respuestas_ibfk_2")
+
+  @@index([dim_abogados_id], map: "dim_abogados_id")
+  @@index([trx_preguntas_id], map: "trx_preguntas_id")
+}
+
+model trx_respuestas_corredores {
+  trx_respuestas_corredores_id     Int       @id @default(autoincrement())
+  trx_preguntas_corredores_id      Int
+  trx_respuestas_corredores_activo Int?      @default(1) @db.TinyInt
+  trx_respuestas_corredores_texto  String    @db.VarChar(100)
+  dim_corredores_id                Int
+  trx_respuestas_fechacreacion     DateTime? @default(now()) @db.DateTime(0)
+}
+
+model trx_transacciones {
+  trx_transacciones_id            Int                         @id @default(autoincrement())
+  trx_transacciones_openpay_id    String?                     @db.VarChar(100)
+  dim_clientes_id                 Int
+  trx_transacciones_activo        Int?                        @default(1) @db.TinyInt
+  trx_transacciones_neto          Float                       @db.Float
+  trx_transacciones_tipo          Int?                        @default(0) @db.TinyInt
+  trx_transacciones_estatus       Int?                        @default(0) @db.TinyInt
+  trx_transacciones_pagado        Int?                        @default(0) @db.TinyInt
+  trx_transacciones_fechacreacion DateTime?                   @default(now()) @db.DateTime(0)
+  trx_transaccionesdetalles       trx_transaccionesdetalles[]
+}
+
+model trx_transaccionesdetalles {
+  trx_transaccionesdetalles_id            Int               @id @default(autoincrement())
+  trx_transacciones_id                    Int
+  dim_citas_id                            Int
+  trx_transaccionesdetalles_activo        Int?              @default(1) @db.TinyInt
+  trx_transaccionesdetalles_cantidad      Int               @default(1)
+  trx_transaccionesdetalles_neto          Float             @db.Float
+  trx_transaccionesdetalles_estatus       Int?              @default(1) @db.TinyInt
+  trx_transaccionesdetalles_fechacreacion DateTime?         @default(now()) @db.DateTime(0)
+  trx_transacciones                       trx_transacciones @relation(fields: [trx_transacciones_id], references: [trx_transacciones_id], onDelete: NoAction, onUpdate: NoAction, map: "trx_transaccionesdetalles_ibfk_1")
+
+  @@index([dim_citas_id], map: "dim_citas_id")
+  @@index([trx_transacciones_id], map: "trx_transacciones_id")
+}
+
+model citas {
+  cita_id         Int           @id @default(autoincrement())
+  hora_dia_inicio DateTime?     @db.DateTime(0)
+  usuario_id      Int?
+  abogado_id      Int?
+  hora_dia_fin    DateTime?     @db.DateTime(0)
+  dim_usuarios    dim_usuarios? @relation(fields: [usuario_id], references: [dim_usuarios_id], onDelete: Cascade, onUpdate: NoAction, map: "fk_usuario_id")
+
+  @@index([usuario_id], map: "fk_usuario_id")
+}
+
+model rel_courses_exam {
+  dim_productos_id  Int
+  dim_exam_id       Int
+  rel_activo        Int?          @db.TinyInt
+  rel_fechacreacion DateTime?     @db.DateTime(0)
+  dim_productos     dim_productos @relation(fields: [dim_productos_id], references: [dim_productos_id], onDelete: NoAction, onUpdate: NoAction, map: "rel_courses_exam_ibfk_1")
+  dim_exam          dim_exam      @relation(fields: [dim_exam_id], references: [dim_exam_id], onDelete: NoAction, onUpdate: NoAction, map: "rel_courses_exam_ibfk_2")
+
+  @@id([dim_productos_id, dim_exam_id])
+  @@index([dim_exam_id], map: "dim_exam_id")
+}
+
+model rel_productos_precios {
+  dim_productos_id  Int
+  dim_precios_id    Int
+  rel_activo        Int?          @db.TinyInt
+  rel_fechacreacion DateTime?     @db.DateTime(0)
+  dim_productos     dim_productos @relation(fields: [dim_productos_id], references: [dim_productos_id], onDelete: NoAction, onUpdate: NoAction, map: "rel_productos_precios_ibfk_1")
+  dim_precios       dim_precios   @relation(fields: [dim_precios_id], references: [dim_precios_id], onDelete: NoAction, onUpdate: NoAction, map: "rel_productos_precios_ibfk_2")
+
+  @@id([dim_productos_id, dim_precios_id])
+  @@index([dim_precios_id], map: "dim_precios_id")
+}
+
+model rel_productos_tipos {
+  dim_productos_id  Int
+  dim_tipos_id      Int
+  rel_activo        Int?          @db.TinyInt
+  rel_fechacreacion DateTime?     @db.DateTime(0)
+  dim_productos     dim_productos @relation(fields: [dim_productos_id], references: [dim_productos_id], onDelete: NoAction, onUpdate: NoAction, map: "rel_productos_tipos_ibfk_1")
+  dim_tipos         dim_tipos     @relation(fields: [dim_tipos_id], references: [dim_tipos_id], onDelete: NoAction, onUpdate: NoAction, map: "rel_productos_tipos_ibfk_2")
+
+  @@id([dim_productos_id, dim_tipos_id])
+  @@index([dim_tipos_id], map: "dim_tipos_id")
+}
+
+model rel_urls_productos {
+  dim_urls_id       Int
+  dim_productos_id  Int
+  rel_activo        Int?          @db.TinyInt
+  rel_fechacreacion DateTime?     @db.DateTime(0)
+  dim_urls          dim_urls      @relation(fields: [dim_urls_id], references: [dim_urls_id], onDelete: NoAction, onUpdate: NoAction, map: "rel_urls_productos_ibfk_1")
+  dim_productos     dim_productos @relation(fields: [dim_productos_id], references: [dim_productos_id], onDelete: NoAction, onUpdate: NoAction, map: "rel_urls_productos_ibfk_2")
+
+  @@id([dim_urls_id, dim_productos_id])
+  @@index([dim_productos_id], map: "dim_productos_id")
+}
+
+model trx_carrodecompras {
+  trx_carrodecompras_id            Int      @id @default(autoincrement())
+  dim_clientes_id                  Int
+  dim_productos_id                 Int
+  trx_carrodecompras_cantidad      Int
+  trx_carrodecompras_precio        Float    @db.Float
+  trx_num_firmas                   Int
+  trx_carrodecompras_estatus       String   @db.VarChar(25)
+  trx_carrodecompras_fechacreacion DateTime @db.DateTime(0)
+}
